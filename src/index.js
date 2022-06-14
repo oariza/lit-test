@@ -1,10 +1,17 @@
 import {LitElement, html, css} from 'lit-element'
+import './getData';
 
 export class Index extends LitElement {
+
+    static get properties() {
+        return {
+          getDataAPI: [],
+        };
+      }
+
     constructor(){
         super()
-        this.getDataAPI = localStorage.getItem('myData')
-        this.getData()
+        this.getDataAPI = JSON.parse(localStorage.getItem('myData'))
     }
 
     static get styles() {
@@ -12,6 +19,8 @@ export class Index extends LitElement {
             .container {
                 display: flex;
                 flex-direction: column;
+                max-width: 1000px;
+                margin: 0 auto;
                 
             }
           .header { 
@@ -36,6 +45,7 @@ export class Index extends LitElement {
             justify-content: space-between;
             border-radius: 5px;
             border: 1px solid gray;
+            margin: 8px 0;
         }
 
         .item-row {
@@ -45,17 +55,13 @@ export class Index extends LitElement {
         `;
       }
 
-      getData(){
-        fetch('https://api.datos.gob.mx/v1/calidadAire', {method: "GET"})
-        .then(res => res.json())
-        .then(data => {
-            console.log('data', data.results)
-
-        })
-        .catch(err => console.log('error', err))
+    render() {
+        return html `
+        <get-data></get-data>
+        ${this.dataTemplete}`;
     }
 
-    render(){
+    get dataTemplete(){
         return html`
         <div class="container">
             <div class="header">
@@ -64,16 +70,15 @@ export class Index extends LitElement {
                 <p class="item">Valor</p>
             </div>
 
-            <div class="row">
-                <p class="item-row">23-12-2022</p>
-                <p class="item-row">Aguilas</p>
-                <p class="item-row">1.02</p>
-            </div>
-
-            <div>${this.getDataAPI && this.getDataAPI.map((item)=>{
-                item._id
-            })}</div>
-        </div>
+            ${this.getDataAPI && this.getDataAPI.map((item)=>{
+                return html`
+                <div class="row">
+                    <p class="item-row">${item?.stations?.[0].indexes?.[0]?.calculationTime}</p>
+                    <p class="item-row">${item?.stations?.[0].name}</p>
+                    <p class="item-row">${item?.stations?.[0].measurements?.[0]?.value ? item?.stations?.[0].measurements?.[0]?.value : 0}</p>
+                </div>
+                `
+            })}
         `
     }
 }

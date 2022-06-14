@@ -1,9 +1,10 @@
 import {LitElement, html} from 'lit-element'
 
 export class GetData extends LitElement {
-    constructor(){
-        super()
-        this.getData()
+    
+    
+    firstUpdated() {
+        this.getData();
     }
 
     getData(){
@@ -11,7 +12,7 @@ export class GetData extends LitElement {
         .then(res => res.json())
         .then(data => {
             console.log('data', data.results)
-            localStorage.setItem('myData', data.results)
+            localStorage.setItem('myData', JSON.stringify(data.results))
         })
         .catch(err => console.log('error', err))
     }
